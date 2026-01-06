@@ -1,87 +1,5 @@
 public class TwoThreeTree <V> {
 
-    public static class Node <V> {
-        public Node<V> left;
-        public Node<V> middle;
-        public Node<V> right;
-        public Node<V> parent;
-        public String key;
-        public V value;
-
-        Node (Node<V> left,Node<V> middle,Node<V> right, Node<V> parent,String key) {
-            this.left = left;
-            this.middle = middle;
-            this.right = right;
-            this.parent = parent;
-            this.key = key;
-        }
-
-        Node (Node<V> left,Node<V> middle,Node<V> parent, String key) {
-            this(left,middle,null,parent,key);
-        }
-
-        Node () {
-            this(null,null,null,null);
-        }
-
-        public boolean IsLeaf() {
-            return this.left == null && this.middle == null && this.right == null;
-        }
-
-        public void UpdateKey(Node<V> x) {
-            x.key = x.left.key;
-            if (x.middle != null) {
-                x.key = x.middle.key;
-            }
-            if (x.right != null) {
-                x.key = x.right.key;
-            }
-        }
-
-        public void SetChildren(Node<V> x,Node<V> l,Node<V> m,Node<V> r) {
-            x.left = l;
-            x.middle = m;
-            x.right = r;
-            left.parent = x;
-            if (x.middle != null) {middle.parent = x;}
-            if (x.right != null) {right.parent = x;}
-            UpdateKey(x);
-        }
-
-        public Node<V> InsertAndSplit(Node<V> x,Node<V> z) {
-            Node<V> l = x.left;
-            Node<V> m = x.middle;
-            Node<V> r = x.right;
-
-            if (r == null ) {
-                if (z.key.compareTo(l.key) < 0) {
-                    SetChildren(x,z,l,m);
-                } else if (z.key.compareTo(m.key) < 0) {
-                    SetChildren(x,l,z,m);
-                } else {
-                    SetChildren(x,l,m,z);
-                }
-                return null;
-            }
-            Node<V> y = new Node<>();
-            if (z.key.compareTo(l.key) < 0) {
-                SetChildren(x,z,l,null);
-                SetChildren(y,m,r,null);
-            } else if (z.key.compareTo(m.key) < 0) {
-                SetChildren(x,l,z,null);
-                SetChildren(y,m,r,null);
-            } else if (z.key.compareTo(r.key) < 0) {
-                SetChildren(x,l,m,null);
-                SetChildren(y,z,r,null);
-            } else {
-                SetChildren(x,l,m,null);
-                SetChildren(y,r,z,null);
-            }
-            return y;
-        }
-
-    }
-
     public Node<V> root;
 
     TwoThreeTree () {
@@ -97,7 +15,6 @@ public class TwoThreeTree <V> {
         x.middle = m;
         root = x;
     }
-
 
     public Node<V> Search (Node<V> x, String key) {
         if (x.IsLeaf()) {
@@ -116,8 +33,8 @@ public class TwoThreeTree <V> {
         }
     }
 
-    public void Insert(TwoThreeTree<V> T,Node<V> z) {
-        Node<V> y = T.root;
+    public void Insert(Node<V> z) {
+        Node<V> y = this.root;
         while (!(y.IsLeaf())) {
             if (z.key.compareTo(y.left.key) < 0) {
                 y = y.left;
@@ -129,20 +46,79 @@ public class TwoThreeTree <V> {
         }
         Node<V> x = y.parent;
         z = z.InsertAndSplit(x,z);
-        while (x != T.root) {
+        while (x != this.root) {
             x = x.parent;
             if (z != null) {
                 z = z.InsertAndSplit(x,z);
             } else {
-                x.UpdateKey(x);
+                x.UpdateKey();
             }
         }
         if (z != null) {
             Node<V> w = new Node<>();
-            Set_Children(w,x,z,null);
-            T.root = 
+            w.SetChildren(x,z,null);
+            this.root = w;
         }
     }
 
+    public Node<V> BorrowOrMerge(Node<V> y) {
+        Node<V> z = y.parent;
+        if (y == z.left) {
+            Node<V> x = z.middle;
+            if (x.right != null) {
+                y.SetChildren(y.left,x.left,null);
+                x.SetChildren(x.middle,x.right,null);
+            } else {
+                x.SetChildren(y.left,x.left,null);
+                z.SetChildren(x,z.right,null);
+            }
+            return z;
+        }
+        if (y == z.middle) {
+            Node<V> x = z.left;
+            if (x.right != null) {
+                y.SetChildren(x.right,y.left, null);
+                x.SetChildren(x.left,x.middle,null);
+            } else {
+                x.SetChildren(x.left,x.middle,y.left);
+                z.SetChildren(x,z.right,null);
+            }
+            return z;
+        }
+        Node<V> x = z.middle;
+        if (x.right != null) {
+            y.SetChildren(x.right,y.left, null);
+            x.SetChildren(x.left,x.middle,null);
+        } else {
+            x.SetChildren(x.left,x.middle,y.left);
+            z.SetChildren(z.left,x,null);
+        }
+        return z;
+    }
+
+    public void Delete(Node<V> x) {
+        Node<V> y = x.parent;
+        if (x == y.left) {
+            y.SetChildren(y.middle,y.right,null);
+        } else if (x == y.middle) {
+            y.SetChildren(y.left,y.right,null);
+        } else {
+            y.SetChildren(y.left,y.middle,null);
+        }
+        while (y != null) {
+            if (y.middle != null) {
+                y.UpdateKey();
+                y = y.parent;
+            } else {
+                if (y != this.root) {
+                    y = BorrowOrMerge(y);
+                } else {
+                    this.root = y.left;
+                    y.left.parent = null;
+                    return;
+                }
+            }
+        }
+    }
 
 }
