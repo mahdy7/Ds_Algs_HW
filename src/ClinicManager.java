@@ -34,25 +34,38 @@ public class ClinicManager {
 
     public void patientEnter(String doctorId, String patientId) {
         Node<DoctorData> d = D.Search(D.root,doctorId);
-        if (d == null) {
-            throw new IllegalArgumentException();
-        }
         Node<PatientData> p = P.Search(P.root,patientId);
-        if (p != null) {
+        if (d == null || p != null) {
             throw new IllegalArgumentException();
         }
+
         p = new Node<PatientData>(patientId);
         d.value.increaseLoad();
+        d.value.addPatient(p);
         p.value = new PatientData(doctorId);
         P.Insert(p);
     }
 
     public String nextPatientLeave(String doctorId) {
-        return null;
+        Node<DoctorData> d = D.Search(D.root,doctorId);
+        if (d == null || d.value.load == 0) {
+            throw new IllegalArgumentException();
+        }
+        Node<PatientData> p = d.value.removeHead();
+        P.Delete(p);
+        return p.key;
     }
 
     public void patientLeaveEarly(String patientId) {
-
+        Node<PatientData> p = P.Search(P.root,patientId);
+        if (p == null) {
+            throw new IllegalArgumentException();
+        }
+        Node<DoctorData> d = D.Search(D.root,p.value.assignedDoctor);
+        d.value.decreaseLoad();
+        p.value.prevPatient.value.nextPatient = p.value.nextPatient;
+        p.value.nextPatient.value.prevPatient = p.value.prevPatient;
+        P.Delete(p);
     }
 
     public int numPatients(String doctorId) {
@@ -64,11 +77,20 @@ public class ClinicManager {
     }
 
     public String nextPatient(String doctorId) {
-        return null;
+        Node<DoctorData> d = D.Search(D.root,doctorId);
+        if (d == null || d.value.load == 0) {
+            throw new IllegalArgumentException();
+        }
+        Node<PatientData> p = d.value.getHead();
+        return p.key;
     }
 
     public String waitingForDoctor(String patientId) {
-        return null;
+        Node<PatientData> p = P.Search(P.root,patientId);
+        if (p == null) {
+            throw new IllegalArgumentException();
+        }
+        return p.value.assignedDoctor;
     }
 
     public int numDoctorsWithLoadInRange(int low, int high) {
