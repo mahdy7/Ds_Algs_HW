@@ -1,8 +1,8 @@
 public class DoctorData {
 
     int load;
-    Node<PatientData> head;
-    Node<PatientData> tail;
+    Node<PatientData,String> head;
+    Node<PatientData,String> tail;
 
 
     DoctorData() {
@@ -15,7 +15,7 @@ public class DoctorData {
         load++;
     }
 
-    public void addPatient(Node<PatientData> patient) {
+    public void addPatient(Node<PatientData,String> patient) {
         if (this.head == null) {
             this.head = patient;
             this.tail = patient;
@@ -30,26 +30,20 @@ public class DoctorData {
         load--;
     }
 
-    public Node<PatientData> getHead() {
+    public Node<PatientData,String> getHead() {
         return head;
     }
 
-    public void setHead(Node<PatientData> head) {
-        this.head = head;
-    }
-
-    public Node<PatientData> getTail() {
-        return tail;
-    }
-
-    public void setTail(Node<PatientData> tail) {
-        this.tail = tail;
-    }
-
-    public Node<PatientData> removeHead() {
-        Node<PatientData> oldHead = this.head;
-        this.head.value.nextPatient.value.prevPatient = null;
-        this.head = oldHead.value.nextPatient;
-        return oldHead;
+    public Node<PatientData,String> removeHead() {
+        Node<PatientData,String> oldHead = this.head;
+        if (this.head.value.nextPatient != null) {
+            this.head.value.nextPatient.value.prevPatient = null;
+            this.head = this.head.value.nextPatient;
+            return oldHead;
+        } else {
+            this.head = null;
+            this.tail = null;
+            return oldHead;
+        }
     }
 }

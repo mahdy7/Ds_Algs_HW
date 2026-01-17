@@ -1,23 +1,22 @@
 public class PatientData {
 
     public String assignedDoctor;
-    public Node<PatientData> nextPatient;
-    public Node<PatientData> prevPatient;
+    public Node<PatientData,String> nextPatient;
+    public Node<PatientData,String> prevPatient;
 
     PatientData(String assignedDoctor) {
         this.assignedDoctor = assignedDoctor;
     }
 
-    public Node<PatientData> getNextPatient() {
+    public Node<PatientData,String> getNextPatient() {
         return nextPatient;
     }
 
-    public Node<PatientData> getPrevPatient() {
+    public Node<PatientData,String> getPrevPatient() {
         return prevPatient;
     }
 
-    public void add(Node<PatientData> patient) {
+    public void add(Node<PatientData,String> patient) {
         this.nextPatient = patient;
-
     }
 }
