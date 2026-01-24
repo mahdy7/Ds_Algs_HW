@@ -7,9 +7,11 @@ public class TwoThreeTree<V, K extends Comparable<K>> {
         Node<V, K> l = new Node<>();
         Node<V, K> m = new Node<>();
         l.key = minimum;
+        l.sentinel = true;
         l.nodeCount = 0;
         l.loadSum = 0;
         m.key = maximum;
+        m.sentinel = true;
         m.nodeCount = 0;
         m.loadSum = 0;
         l.parent = x;

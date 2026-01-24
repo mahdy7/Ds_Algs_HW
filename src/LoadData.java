@@ -9,7 +9,7 @@ public class LoadData implements Comparable<LoadData> {
 
     @Override
     public int compareTo(LoadData o) {
-        int cmp = this.load - o.load;
+        int cmp = Integer.compare(this.load, o.load);
         if (cmp == 0) {
             return this.doctorId.compareTo(o.doctorId);
         }

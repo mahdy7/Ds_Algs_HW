@@ -136,12 +136,16 @@ public class ClinicManager {
     }
 
     public int numDoctorsWithLoadInRange(int low, int high) {
+        if (high < low) return 0;
         LoadData highLoad = new LoadData(MAX_ID, high);
         LoadData lowLoad = new LoadData(MIN_ID, low);
         Node<LoadData, LoadData> highestOne = L.PredNodeSearch(L.root, highLoad);
         Node<LoadData, LoadData> lowestOne = L.PredNodeSearch(L.root, lowLoad);
         if (highestOne.key.load != high) {
             Node<LoadData, LoadData> tmp = highestOne.predecessor(highestOne);
+            if (highestOne == lowestOne && highestOne.sentinel) {
+                return 0;
+            }
             if (tmp != null) {
                 highestOne = tmp;
             } else {
@@ -149,7 +153,6 @@ public class ClinicManager {
             }
         }
         return L.Rank(highestOne) - L.Rank(lowestOne) + 1;
-
     }
 
     public int averageLoadWithinRange(int low, int high) {

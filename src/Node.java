@@ -8,6 +8,7 @@ public class Node<V, K extends Comparable<K>> {
     public int loadSum;
     public K key;
     public V value;
+    public boolean sentinel = false;
 
     Node(Node<V, K> left, Node<V, K> middle, Node<V, K> right, Node<V, K> parent, K key) {
         this.left = left;

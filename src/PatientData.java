@@ -8,14 +8,6 @@ public class PatientData {
         this.assignedDoctor = assignedDoctor;
     }
 
-    public Node<PatientData,String> getNextPatient() {
-        return nextPatient;
-    }
-
-    public Node<PatientData,String> getPrevPatient() {
-        return prevPatient;
-    }
-
     public void add(Node<PatientData,String> patient) {
         this.nextPatient = patient;
     }
